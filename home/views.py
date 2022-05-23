@@ -1,3 +1,4 @@
+import math
 from django.shortcuts import render,HttpResponse
 from home.models import Contact
 
@@ -15,8 +16,11 @@ def index(request):
 
         comments=request.POST.get('comments')
 
-        contact=Contact(name=name,email=email,roll=roll,phone=phone,dept=dept,web=web,ui=ui,business=business,comments=comments)
-        contact.save()
+        if(len(phone)==10):
+            contact=Contact(name=name,email=email,roll=roll,phone=phone,dept=dept,web=web,ui=ui,business=business,comments=comments)
+            contact.save()
+        else:
+            return render(request,'index.html',{'error':True})
 
         
 
