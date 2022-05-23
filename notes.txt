@@ -1,0 +1,153 @@
+//** YUP HERES YOUR DJANGO SHORT NOTES **//
+
+So, we started off with making a folder in desktop and then install django inside it.
+Now that django is in, we just do <django-admin startproject hello> to start the whole trip
+And now we'll see the main folder, inside which there is a hello (project), inside which there is another 
+hello(contains py files) and a manage.py ->right on track
+
+Now close the editor and open the outer hello folder, so that we can access the manage.py file (atleast 
+easy to remember like that)
+
+Now that we have changed directory, <python manage.py startapp home> ->and we get our first app then ->gg
+
+//** VIEWS **//
+
+So in here na, views are kinda like your event listener ->we just define functions in here, which will be run 
+for different urls. So as of now, there are like 2 imp keywords -> <HttpsResponse,render>
+HttpsResponse is p much like your console.log(but on the main screen), and render is for templates which we'll 
+get to soon.
+
+So now that we have defined different functions for different urls, lets make it such that these url navigate 
+to the right functions
+
+//** MAINTAINING URLS **//
+
+So now go to the urls.py file in hello folder, and scroll staright down ignoring comments. So the plan is that
+we'll make a new "urls.py" file in the home folder(app), so that we can take control from the project to this app.
+So first thing, make the file in home then. Now come to this urls.py of hello and see within the comments, 
+theres a guide that if we want to include another URLConfig ->yeahh go for the kill
+So import include from django.urls and then urlpatterns, we just make this new path('',include("home.urls"))
+What that means is that, in the url in the browser, if it matches to the first entry, then for further navigation,
+got to the urls file in home ->yeahh got it.
+We used a '' here, so that no matter what the url is, it goes to home.urls, but we could make it app specific 
+later on ->gg
+
+Now that we fixed the urls.py in hello, lets go to urls.py in home ->so here copy all the import and urlpatterns
+from hello.py and also import the views from home by <from . import hello> '.' means same directory.
+But this time inside url patterns, well add the further url, (like /home, /about and stuff) and then link to the 
+particular function in views.py ->op sir
+
+SO THAT KINDA DOES ROUND IT UP FOR VIEWS AND URLS, but in views we didnt discuss render, so for that, we'll have 
+to know what ar static and template files ->lesssgooo
+
+//** STATIC FILES **//
+
+So static files are those, which youre fine with letting the user get access to, like images, videos and stuff
+So what we do is first make this static folder, under the main hello folder, not the hello(app) folder.
+So now that we made this static boi, put in some file like text.txt with some text ->cool
+
+Now to actually let django know that we have this static folder, we go to settings in hello, and scroll until 
+we find static_url, now just below that, we'll have a comment which takes us to the doc ->go there and copy
+the code for the STATICFILES_DIRS (keeps changing with time, so use the docs here). Now usually, there would be
+a few entries, but our main g is to just say that (main_directory ->static folder), so we can erase the others
+
+Ok, all thats cool but now how to access this static file on the browser ->well for that go to browser and do
+/static/text.txt ->and itll open up OOF TOO GOOD
+
+//** TEMPLATES **//
+So you could say that these template folders have your html, css, js and stuff, which we worked on quite a bit,
+but then again before they're rendered, we need to do some linking and all
+
+So again, make the templates folder in the main hello, put in a basic html file.
+So back to the settings in hello, and see for templates, then there'll be key 'DIR', there you just need to paste 
+the same thing we put into STATICFILES_DIRS, but just change the static to "templates", to again say that
+(Main_dir -> templates folder).
+
+Ok so the calling is sorted for, but how do you call ->we use the render in the views ->AAH FINALLY
+
+//** RENDER **//
+So in the function where we want to use render, just do <render(request,<name of html file as string>,paramaters)>
+Now the request is the same thing, we took in as parameters for the function, and parameters is a dictionary
+having a few key value pairs, we're just sending them through here, so that we can use it in the html
+
+Wherever we wanna use the parameters in the html, just go {{key-name}} ->heavvy sorted
+
+
+
+//NOW THAT WAS LIKE KINDA THE BASIC STUFF, AND WE CAN MAKE NICE INTERACTIVE SITES USING THAT, BUT FIRST 
+PRIORITY IS FORMS, WHICH IS ASKED FOR THE ASSIGNMENT //
+
+So i made a decent index.html having the forms and stuff and make the urls go to the index.html
+coz the form is the only page that is needed atm .
+ ->check how i did it. But the real pain was in involving the css for it. So i had to create the css file in 
+ static, and then call it here in a weird way like
+ {% load static %} and then where we need the href, we go {% static styles.css%} ->cool
+
+So firstly we need to make roper use of the django database
+run <python manage.py migrate>
+Now we need to create a super user so that we can see the databases, using the admin/ site ->so going for it
+<python manage.py createsuperuser> ->and then fill in the passwords and all, now go to the browser and do 
+/admin in the end, get authenticated, and then we see the databases ->op
+
+// MODELS //
+
+So heres how we go about the kill
+
+go to models.py in the app, and define like
+class Contact(models.Model):
+    name=models.Charfield(max_length=122)
+    ......
+    .....
+    .....
+    phone=models.Decimalfield(max_digits=10,decimal_places=0)
+
+A few things to keep in note here
+1) we're kinda making a table, and there stuff inside class will be our columns, and we also give in the 
+datatype and other info, like max length and stuff.
+2)the parameters of max_length, max_digits, decimal_places etc are all compulsary, else it shows error
+3)Dont put a comma after every column, gives another error. 
+
+Ok, so now before we try to see our database in /admin, we need to 2 more things
+
+1->REGISTER THE MODEL
+go to admin.py of the app, and there <from home.models import Contact>, and then
+<admin.site.register(Contact)> ->yup that registers the models
+
+2->REGISTER THE APP IF 
+go to apps.py in app, then copy the classname (HomeConfig) here, now go to settings of project, and put that
+inside the installed apps (like put the path, home.apps.HomeConfig)
+
+now that the steps are done, just do <python manage.py makemigrations> kind of like your git branch you could
+say, and then do <python manage.py migrate> to actually reflect it to the database, 
+and then go to /admin to see the db ->gg
+
+//USING THE FORM TO INPUT INTO DB//
+
+Now before we do that, theres a few things to check up on. In the form that we made in the html, make sure 
+that the tag is like <form method="POST" action="">, method says if its get or post and action says to where it
+shd go after submitting
+
+And also inside the form, make sure that you have {% csrf_token %} ->its to make sure that youre not some hacker
+or sm 
+
+Ok, so now that all thats checked and sorted, we can start the real work
+
+so go to the view which from which the page is rendered, and before the return statement do this
+
+if(request.method=="POST"):
+    name=request.POST.get('name')
+    email=request.POST.get('email)
+    ......
+    .....
+    and so on for all the fields of the form
+
+    contact=Contact(name=name,email=email,.......)
+    contact.save()
+return render(request,'index.html')
+
+but just import Contact before hand by <from home.models import Contact>
+
+now that we actually made the table and stuff, we need to do the migrate and then makemigrations
+so that the actual database also gets modified. There was one error that kept happening saying that there cant be 
+a not nullable thing or sm, basically the db wanted to know what to put in, if the entry was null. So for tht, just 
+put in default values -> and we'll be good to go.
